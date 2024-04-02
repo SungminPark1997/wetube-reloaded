@@ -1,10 +1,17 @@
 import express from "express";
-import { home, editProfile, userId } from "../controllers/userController";
+import {
+  edit,
+  remove,
+  logout,
+  see,
+  startGithubLogin,
+  finishGithubLogin,
+} from "../controllers/userController";
 
 const userRouter = express.Router();
+userRouter.get("/logout", logout);
+userRouter.get("/edit", edit);
 
-userRouter.get("/", home);
-userRouter.get("/edit-profile", editProfile);
-userRouter.get("/:id", userId);
-
+userRouter.get("/github/start", startGithubLogin);
+userRouter.get("/github/callback", finishGithubLogin);
 export default userRouter;

@@ -1,29 +1,39 @@
-import "./db";
-import movieModel from "./models/video";
 import express from "express";
 import morgan from "morgan";
-import globalRouter from "./routers/globalRouter";
+import rootRouter from "./routers/rootRouter";
 import videoRouter from "./routers/videoRouter";
 import userRouter from "./routers/userRouter";
+import session from "express-session";
+import MongoStore from "connect-mongo";
+import { localsMiddleware } from "./middlewares";
 
-const PORT = 4000;
 const app = express();
 const logger = morgan("dev");
 
-const timeLogger = (req, res, next) => {
-  const date = new Date();
-  console.log(
-    `Time: ${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`
-  );
-  next();
-};
 app.set("view engine", "pug");
 app.set("views", process.cwd() + "/src/views");
 app.use(logger);
 app.use(express.urlencoded({ extended: true }));
-app.use("/", globalRouter);
+
+app.use(
+  session({
+    secret: process.env.COOKIE_SECRET,
+    resave: true,
+    saveUninitialized: true,
+    store: MongoStore.create({ mongoUrl: process.env.DB_URL }),
+  })
+);
+
+app.use((req, res, next) => {
+  req.sessionStore.all((error, sessions) => {
+    console.log(sessions);
+    next();
+  });
+});
+
+app.use(localsMiddleware);
+app.use("/", rootRouter);
 app.use("/videos", videoRouter);
 app.use("/users", userRouter);
 
-app.get("/", () => console.log("home"));
-app.listen(PORT, () => console.log("hi"));
+export default app;

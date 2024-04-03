@@ -9,7 +9,8 @@ export const logout = (req, res) => {
 export const getJoin = (req, res) => res.render("join", { pageTitle: "Join" });
 
 export const postJoin = async (req, res) => {
-  const { name, username, emailObj, password, password2, location } = req.body;
+  const { name, username, email, password, password2, location } = req.body;
+
   const pageTitle = "Join";
   if (password !== password2) {
     return res.status(400).render("join", {
@@ -17,18 +18,19 @@ export const postJoin = async (req, res) => {
       errorMessage: "Password confirmation does not match.",
     });
   }
-  const exists = await User.exists({ $or: [{ username }, { emailObj }] });
+  const exists = await User.exists({ $or: [{ username }, { email }] });
+
   if (exists) {
     return res.status(400).render("join", {
       pageTitle,
-      errorMessage: "This username/emailObj is already taken.",
+      errorMessage: "This username/email is already taken.",
     });
   }
   try {
     await User.create({
       name,
       username,
-      emailObj,
+      email,
       password,
       location,
     });
@@ -48,6 +50,7 @@ export const postLogin = async (req, res) => {
   const { username, password } = req.body;
   const pageTitle = "Login";
   const user = await User.findOne({ username, socialOnly: false });
+  console.log(user);
   if (!user) {
     return res.status(400).render("login", {
       pageTitle,
@@ -122,6 +125,7 @@ export const finishGithubLogin = async (req, res) => {
     let user = await User.findOne({ email: emailObj.email });
     if (!user) {
       user = await User.create({
+        avatarUrl: userData.avatarUrl,
         name: userData.name,
         username: userData.login,
         email: emailObj.email,
@@ -138,4 +142,74 @@ export const finishGithubLogin = async (req, res) => {
   }
 };
 
-export const edit = (req, res) => res.send("Edit User");
+export const getEdit = (req, res) => {
+  return res.render("edit-profile", { pageTitle: "Edit profile" });
+};
+
+export const postEdit = async (req, res) => {
+  const {
+    session: { user },
+
+    body: { name, email, username, location },
+  } = req;
+  if (username !== user.username) {
+    const findUsername = await User.findOne({ username });
+    if (findUsername) {
+      return res.render("edit-profile", {
+        pageTitle: "Edit Profile",
+        errorMessage: "User is exist",
+      });
+    }
+  }
+  if (email !== user.email) {
+    const findEmail = await User.findOne({ email });
+    if (findEmail) {
+      return res.render("edit-profile", {
+        pageTitle: "Edit Profile",
+        errorMessage: "email is exist",
+      });
+    }
+  }
+  const updatedUser = await User.findByIdAndUpdate(
+    user._id,
+    {
+      name,
+      email,
+      username,
+      location,
+    },
+    { new: true }
+  );
+  req.session.user = updatedUser;
+  return res.render("edit-profile");
+};
+
+export const getChangePassword = (req, res) => {
+  return res.render("change-password", { pageTitle: "Changet password" });
+};
+
+export const postChangePassword = async (req, res) => {
+  const {
+    session: {
+      user: { _id },
+    },
+    body: { oldPassword, newPassword, newPasswordConfirmation },
+  } = req;
+  const user = await User.findById(_id);
+  const ok = await bcrypt.compare(oldPassword, user.password);
+  if (!ok) {
+    return res.status(400).render("users/change-password", {
+      pageTitle: "Change Password",
+      errorMessage: "The current password is incorrect",
+    });
+  }
+  if (newPassword !== newPasswordConfirmation) {
+    return res.status(400).render("users/change-password", {
+      pageTitle: "Change Password",
+      errorMessage: "The password does not match the confirmation",
+    });
+  }
+  user.password = newPassword;
+  await user.save();
+  return res.redirect("/users/logout");
+};

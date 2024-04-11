@@ -6,7 +6,7 @@ import userRouter from "./routers/userRouter";
 import session from "express-session";
 import MongoStore from "connect-mongo";
 import { localsMiddleware } from "./middlewares";
-
+import apiRouter from "./routers/apiRouter";
 const app = express();
 const logger = morgan("dev");
 
@@ -26,16 +26,15 @@ app.use(
 
 app.use((req, res, next) => {
   req.sessionStore.all((error, sessions) => {
-    console.log(sessions);
     next();
   });
 });
 
 app.use(localsMiddleware);
 app.use("/", rootRouter);
-app.use("/static", express.static("assets"));
-app.use("/uploads", express.static("uploads"));
 app.use("/videos", videoRouter);
 app.use("/users", userRouter);
-
+app.use("/api", apiRouter);
+app.use("/static", express.static("assets"));
+app.use("/uploads", express.static("uploads"));
 export default app;

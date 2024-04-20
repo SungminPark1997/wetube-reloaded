@@ -155,5 +155,9 @@ export const deleteComment = async (req, res) => {
     return res.sendStatus(404);
   }
   await Comment.findByIdAndDelete(deleteComment);
+
   return res.sendStatus(201);
 };
+/*const comment_user = await User.findById(user._id);
+  comment_user.comments.pull(deleteComment);
+  await comment_user.save();*/

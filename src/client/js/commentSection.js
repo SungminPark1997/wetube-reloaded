@@ -49,7 +49,6 @@ if (form) {
 const handleDelete = async (event) => {
   const deleteTarget = event.target.closest(".video__comment");
   const deleteId = deleteTarget.dataset.id;
-
   const response = await fetch(`/api/videos/${videoId}/${deleteId}`, {
     method: "DELETE",
   });

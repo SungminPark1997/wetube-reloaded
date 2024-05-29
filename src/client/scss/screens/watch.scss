@@ -6,6 +6,9 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+    i {
+      cursor: pointer;
+    }
   }
   .edit__video {
     display: flex;

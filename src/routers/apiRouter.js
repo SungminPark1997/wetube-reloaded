@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  clickLike,
   createComment,
   deleteComment,
   registerView,
@@ -13,4 +14,5 @@ apiRouter.delete(
   "/videos/:id([0-9a-f]{24})/:deleteComment([0-9a-f]{24})",
   deleteComment
 );
+apiRouter.post("/videos/:id([0-9a-f]{24})/like", clickLike);
 export default apiRouter;

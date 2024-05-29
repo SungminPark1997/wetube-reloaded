@@ -7,10 +7,12 @@ const volumeRange = document.getElementById("volume");
 const currentTime = document.getElementById("currentTime");
 const totalTime = document.getElementById("totalTime");
 const timeline = document.getElementById("timeline");
-const fullScreenBtn = document.getElementById("fullScreen");
-const fullScreenIcon = fullScreenBtn.querySelector("i");
+const thumpsUp = document.getElementById("thumps-up");
+const videoLike = document.getElementsByClassName("video_like")[0];
 const videoContainer = document.getElementById("videoContainer");
 const videoControls = document.getElementById("videoControls");
+const fullScreenBtn = document.getElementById("fullScreen");
+const fullScreenIcon = fullScreenBtn.querySelector("i");
 
 let controlsTimeout = null;
 let controlsMovementTimeout = null;
@@ -103,6 +105,15 @@ const handleEnded = () => {
     method: "POST",
   });
 };
+
+const like = () => {
+  const { id } = videoContainer.dataset;
+  fetch(`/api/videos/${id}/like`, {
+    method: "POST",
+  });
+
+  videoLike.innerText = Number(videoLike.innerText) + 1;
+};
 playBtn.addEventListener("click", handlePlayClick);
 muteBtn.addEventListener("click", handleMuteClick);
 volumeRange.addEventListener("input", handleVolumeChange);
@@ -114,3 +125,5 @@ timeline.addEventListener("input", handleTimelineChange);
 fullScreenBtn.addEventListener("click", handleFullscreen);
 document.addEventListener("DOMContentLoaded", handleLoadedMetadata);
 video.addEventListener("ended", handleEnded);
+
+thumpsUp.addEventListener("click", like);

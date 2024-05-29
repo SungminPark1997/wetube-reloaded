@@ -158,6 +158,14 @@ export const deleteComment = async (req, res) => {
 
   return res.sendStatus(201);
 };
-/*const comment_user = await User.findById(user._id);
-  comment_user.comments.pull(deleteComment);
-  await comment_user.save();*/
+
+export const clickLike = async (req, res) => {
+  const { id } = req.params;
+  const video = await Video.findById(id);
+  if (!video) {
+    return res.sendStatus(404);
+  }
+  video.like = video.like + 1;
+  await video.save();
+  return res.sendStatus(201);
+};

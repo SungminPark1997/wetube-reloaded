@@ -1,2 +1,46 @@
-.video__grid {
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(250px, 1fr)
+  ); // 각 카드 최소 너비 250px
+  gap: 40px; // 카드 간 간격
+  width: 100%;
+  // 전체 화면 차지
+  padding: 20px;
+
+  box-sizing: border-box; // 패딩 포함한 전체 사이즈
+  overflow-y: auto; // 스크롤을 가능하게
+}
+
+.video-mixin {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  cursor: pointer;
+
+  &__thumb {
+    height: 180px;
+    background-size: cover;
+    background-position: center;
+  }
+
+  &__data {
+    padding: 15px;
+
+    &__title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #333;
+    }
+
+    &__meta {
+      font-size: 0.875rem;
+      color: #777;
+    }
+  }
 }

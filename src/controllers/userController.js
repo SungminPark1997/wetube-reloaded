@@ -174,7 +174,7 @@ export const postEdit = async (req, res) => {
   const updatedUser = await User.findByIdAndUpdate(
     user._id,
     {
-      avatarUrl: file ? file.path : avatarUrl,
+      avatarUrl: file ? file.location : avatarUrl,
       name,
       email,
       username,
@@ -191,7 +191,7 @@ export const getChangePassword = (req, res) => {
     req.flash("error", "Can't change password.");
     return res.redirect("/");
   }
-  return res.render("users/change-password", { pageTitle: "Change Password" });
+  return res.render("change-password", { pageTitle: "Change Password" });
 };
 
 export const postChangePassword = async (req, res) => {
